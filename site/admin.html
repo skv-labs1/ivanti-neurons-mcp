@@ -9,43 +9,47 @@
       --ivanti-red: #E31837;
       --dark: #1a1a2e;
       --dark2: #16213e;
+      --bg: #f5f5f8;
       --white: #ffffff;
+      --text: #1a1a2e;
       --gray: #6c757d;
       --green: #28a745;
       --red: #dc3545;
-      --input-bg: rgba(255,255,255,0.06);
-      --border: rgba(255,255,255,0.12);
+      --input-bg: #ffffff;
+      --border: #e0e0e5;
+      --shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--dark); color: var(--white); min-height: 100vh;
+      background: var(--bg); color: var(--text); min-height: 100vh;
     }
     .header {
       background: linear-gradient(135deg, var(--dark), var(--dark2));
       border-bottom: 3px solid var(--ivanti-red);
-      padding: 1.5rem 2rem; text-align: center;
+      padding: 1.5rem 2rem; text-align: center; color: #fff;
     }
-    .header h1 { font-size: 1.75rem; }
+    .header h1 { font-size: 1.75rem; color: #fff; }
     .header h1 span { color: var(--ivanti-red); }
-    .header .sub { color: var(--gray); font-size: 0.9rem; margin-top: 0.25rem; }
+    .header .sub { color: #999; font-size: 0.9rem; margin-top: 0.25rem; }
     .header a { color: var(--ivanti-red); text-decoration: none; font-size: 0.85rem; }
     .header a:hover { text-decoration: underline; }
     .container { max-width: 700px; margin: 0 auto; padding: 2rem 1rem; }
     .section {
-      background: rgba(255,255,255,0.03);
+      background: var(--white);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 1.25rem;
       margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
     }
     .section-title {
       font-size: 1rem; font-weight: 700; margin-bottom: 1rem;
-      display: flex; align-items: center; gap: 0.5rem;
+      display: flex; align-items: center; gap: 0.5rem; color: var(--text);
     }
     .section-title .dot {
       width: 10px; height: 10px; border-radius: 50%;
-      background: var(--gray); display: inline-block;
+      background: #ccc; display: inline-block;
     }
     .section-title .dot.ok  { background: var(--green); }
     .section-title .dot.err { background: var(--red); }
@@ -64,37 +68,37 @@
     .input-wrap input {
       flex: 1; padding: 0.55rem 0.75rem;
       background: transparent; border: none; outline: none;
-      color: var(--white); font-family: monospace; font-size: 0.85rem;
+      color: var(--text); font-family: monospace; font-size: 0.85rem;
     }
     .input-wrap button.toggle {
       background: transparent; border: none; color: var(--gray);
       cursor: pointer; padding: 0.5rem 0.65rem; font-size: 0.8rem;
     }
-    .input-wrap button.toggle:hover { color: var(--white); }
+    .input-wrap button.toggle:hover { color: var(--text); }
     .static-val {
       padding: 0.55rem 0.75rem;
-      background: var(--input-bg);
-      border: 1px solid var(--border);
+      background: #f0faf0;
+      border: 1px solid #c8e6c9;
       border-radius: 6px;
       font-family: monospace; font-size: 0.85rem;
       color: var(--green);
     }
     .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
     button.primary {
-      background: var(--ivanti-red); color: var(--white);
+      background: var(--ivanti-red); color: #fff;
       border: none; padding: 0.6rem 1.5rem; border-radius: 6px;
       font-weight: 700; font-size: 0.85rem; cursor: pointer;
       text-transform: uppercase; letter-spacing: 0.04em;
-      transition: opacity 0.2s;
+      transition: opacity 0.2s; box-shadow: 0 2px 6px rgba(227,24,55,0.25);
     }
     button.primary:hover { opacity: 0.85; }
     button.secondary {
-      background: rgba(255,255,255,0.08); color: var(--white);
+      background: var(--white); color: var(--text);
       border: 1px solid var(--border); padding: 0.6rem 1.5rem;
       border-radius: 6px; font-weight: 600; font-size: 0.85rem;
       cursor: pointer; transition: background 0.2s;
     }
-    button.secondary:hover { background: rgba(255,255,255,0.14); }
+    button.secondary:hover { background: #f0f0f3; }
     button.danger {
       background: transparent; color: var(--red);
       border: 1px solid var(--red); padding: 0.6rem 1.5rem;
@@ -106,15 +110,16 @@
       border-radius: 6px; font-size: 0.8rem; font-family: monospace;
       display: none; word-break: break-all;
     }
-    .status.ok  { display: block; background: rgba(40,167,69,0.15); color: var(--green); border: 1px solid rgba(40,167,69,0.3); }
-    .status.err { display: block; background: rgba(220,53,69,0.15); color: var(--red); border: 1px solid rgba(220,53,69,0.3); }
-    .status.loading { display: block; background: rgba(255,193,7,0.1); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); }
+    .status.ok  { display: block; background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+    .status.err { display: block; background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a; }
+    .status.loading { display: block; background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
     .note {
       margin-top: 2rem; padding: 1rem; border-radius: 8px;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      background: var(--white); border: 1px solid var(--border);
       color: var(--gray); font-size: 0.82rem; line-height: 1.5;
+      box-shadow: var(--shadow);
     }
-    .note strong { color: var(--white); }
+    .note strong { color: var(--text); }
   </style>
 </head>
 <body>
@@ -203,27 +208,13 @@
   </div>
   <script>
     const NEURONS_BASE_URL_DEFAULT = "https://nvuprd-sfc.ivanticloud.com";
-    const INPUT_KEYS = [
-      "NEURONS_BEARER_TOKEN",
-      "ITSM_BASE_URL", "ITSM_API_KEY",
-      "MDM_BASE_URL", "MDM_USERNAME", "MDM_PASSWORD",
-    ];
+    const INPUT_KEYS = ["NEURONS_BEARER_TOKEN","ITSM_BASE_URL","ITSM_API_KEY","MDM_BASE_URL","MDM_USERNAME","MDM_PASSWORD"];
     const ALL_KEYS = ["NEURONS_BASE_URL", ...INPUT_KEYS];
     const mcpUrl = `${location.origin}/api/mcp`;
-
-    function loadAll() {
-      for (const k of INPUT_KEYS) {
-        const v = sessionStorage.getItem(`mcp_${k}`) || "";
-        document.getElementById(k).value = v;
-      }
-    }
+    function loadAll() { for (const k of INPUT_KEYS) { document.getElementById(k).value = sessionStorage.getItem(`mcp_${k}`) || ""; } }
     function saveAll() {
       sessionStorage.setItem("mcp_NEURONS_BASE_URL", NEURONS_BASE_URL_DEFAULT);
-      for (const k of INPUT_KEYS) {
-        const v = document.getElementById(k).value.trim();
-        if (v) sessionStorage.setItem(`mcp_${k}`, v);
-        else   sessionStorage.removeItem(`mcp_${k}`);
-      }
+      for (const k of INPUT_KEYS) { const v = document.getElementById(k).value.trim(); if (v) sessionStorage.setItem(`mcp_${k}`, v); else sessionStorage.removeItem(`mcp_${k}`); }
       window.location.href = "/command-center";
     }
     function clearAll() {
@@ -232,22 +223,11 @@
       for (const k of INPUT_KEYS) document.getElementById(k).value = "";
       for (const m of ["Dex","Itsm","Mdm"]) { setDot(m,""); setStatus(m,"",""); }
     }
-    function toggleVis(btn) {
-      const inp = btn.previousElementSibling;
-      inp.type = inp.type === "password" ? "text" : "password";
-    }
+    function toggleVis(btn) { const inp = btn.previousElementSibling; inp.type = inp.type === "password" ? "text" : "password"; }
     function credHeaders() {
-      const h = {};
-      h["x-neurons-base-url"] = NEURONS_BASE_URL_DEFAULT;
-      const map = {
-        NEURONS_BEARER_TOKEN:"x-neurons-bearer-token",
-        ITSM_BASE_URL:"x-itsm-base-url", ITSM_API_KEY:"x-itsm-api-key",
-        MDM_BASE_URL:"x-mdm-base-url", MDM_USERNAME:"x-mdm-username", MDM_PASSWORD:"x-mdm-password",
-      };
-      for (const [key, header] of Object.entries(map)) {
-        const v = document.getElementById(key).value.trim();
-        if (v) h[header] = v;
-      }
+      const h = {}; h["x-neurons-base-url"] = NEURONS_BASE_URL_DEFAULT;
+      const map = {NEURONS_BEARER_TOKEN:"x-neurons-bearer-token",ITSM_BASE_URL:"x-itsm-base-url",ITSM_API_KEY:"x-itsm-api-key",MDM_BASE_URL:"x-mdm-base-url",MDM_USERNAME:"x-mdm-username",MDM_PASSWORD:"x-mdm-password"};
+      for (const [key, header] of Object.entries(map)) { const v = document.getElementById(key).value.trim(); if (v) h[header] = v; }
       return h;
     }
     function setDot(mod, state) { document.getElementById(`dot${mod}`).className = `dot ${state}`; }
@@ -255,15 +235,11 @@
     async function testModule(mod) {
       const modCap = mod.charAt(0).toUpperCase() + mod.slice(1);
       setDot(modCap,""); setStatus(modCap,"loading","Testing…");
-      const toolMap = { dex:"dex_get_environment_summary", itsm:"itsm_get_dashboard_stats", mdm:"mdm_list_devices" };
-      const argsMap = { dex:{}, itsm:{}, mdm:{rows:1} };
+      const toolMap = {dex:"dex_get_environment_summary",itsm:"itsm_get_dashboard_stats",mdm:"mdm_list_devices"};
+      const argsMap = {dex:{},itsm:{},mdm:{rows:1}};
       try {
-        const res = await fetch(mcpUrl, {
-          method:"POST", headers:{"Content-Type":"application/json",...credHeaders()},
-          body: JSON.stringify({jsonrpc:"2.0",id:1,method:"tools/call",params:{name:toolMap[mod],arguments:argsMap[mod]}}),
-        });
-        const data = await res.json();
-        const content = data.result?.content?.[0]?.text || "";
+        const res = await fetch(mcpUrl, {method:"POST",headers:{"Content-Type":"application/json",...credHeaders()},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"tools/call",params:{name:toolMap[mod],arguments:argsMap[mod]}})});
+        const data = await res.json(); const content = data.result?.content?.[0]?.text || "";
         if (data.result?.isError) { setDot(modCap,"err"); setStatus(modCap,"err",`❌ ${content}`); }
         else { setDot(modCap,"ok"); setStatus(modCap,"ok",`✅ Connected — ${content.substring(0,200)}`); }
       } catch(e) { setDot(modCap,"err"); setStatus(modCap,"err",`❌ Fetch error: ${e.message}`); }

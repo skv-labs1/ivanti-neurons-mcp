@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ivanti Neurons MCP Server</title>
+  <style>
+    :root {
+      --ivanti-red: #E31837;
+      --dark: #1a1a2e;
+      --dark2: #16213e;
+      --light: #f0f0f5;
+      --white: #ffffff;
+      --gray: #6c757d;
+      --green: #28a745;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--dark);
+      color: var(--white);
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--dark), var(--dark2));
+      border-bottom: 3px solid var(--ivanti-red);
+      padding: 2rem;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-left { flex: 1; text-align: left; }
+    .header-center { flex: 1; text-align: center; }
+    .header-right { flex: 1; text-align: right; }
+    .header h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+    .header h1 span { color: var(--ivanti-red); }
+    .header .version { color: var(--gray); font-size: 0.9rem; }
+    .header .endpoint {
+      margin-top: 1rem;
+      background: rgba(255,255,255,0.05);
+      display: inline-block;
+      padding: 0.5rem 1.5rem;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.95rem;
+      color: var(--green);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .header-btn {
+      background: var(--gray);
+      color: var(--white);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .header-btn:hover {
+      background: #5a636a;
+      transform: translateY(-2px);
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
+    .status-bar {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 2rem;
+    }
+    .badge {
+      padding: 0.35rem 1rem; border-radius: 20px;
+      font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge.ok   { background: var(--green); color: var(--white); }
+    .badge.off  { background: var(--gray);  color: var(--white); }
+    .badge.load { background: #ffc107;      color: var(--dark); }
+
+    /* Sections */
+    .section { margin-bottom: 1.5rem; }
+    .section-header {
+      background: rgba(255,255,255,0.06);
+      padding: 0.75rem 1rem;
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: background 0.2s;
+    }
+    .section-header:hover { background: rgba(255,255,255,0.1); }
+    .section-header h3 { font-size: 1rem; }
+    .section-header .count { color: var(--gray); font-size: 0.85rem; }
+    .section-header .arrow { transition: transform 0.3s; }
+    .section-header.open .arrow { transform: rotate(90deg); }
+    .section-body {
+      display: none;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.03);
+    }
+    .section-body.open { display: block; }
+    .tool-item {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .tool-item:last-child { border-bottom: none; }
+    .tool-name { font-family: monospace; color: var(--ivanti-red); font-weight: 600; font-size: 0.9rem; }
+    .tool-desc { color: var(--gray); font-size: 0.85rem; margin-top: 0.15rem; }
+
+    /* Setup */
+    h2 { font-size: 1.25rem; margin: 2rem 0 1rem; color: var(--ivanti-red); }
+    pre {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #c9d1d9;
+    }
+    code { font-family: "SF Mono", "Fira Code", monospace; }
+
+    /* Test panel */
+    .test-panel {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+    .test-panel label { font-size: 0.85rem; color: var(--gray); display: block; margin-bottom: 0.3rem; }
+    .test-panel select, .test-panel textarea, .test-panel button {
+      width: 100%;
+      font-family: monospace;
+      font-size: 0.85rem;
+      padding: 0.5rem;
+      margin-bottom: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+      color: var(--white);
+    }
+    .test-panel textarea { min-height: 60px; resize: vertical; }
+    .test-panel button {
+      background: var(--ivanti-red);
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: opacity 0.2s;
+    }
+    .test-panel button:hover { opacity: 0.85; }
+    #testResult {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    @media (max-width: 768px) {
+      .header { flex-direction: column; gap: 1rem; text-align: center; }
+      .header-left, .header-right { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left"></div>
+    <div class="header-center">
+      <h1><span>Ivanti Neurons</span> MCP Server</h1>
+      <div class="version">v1.0.0 &bull; MCP Protocol 2025-03-26</div>
+      <div class="endpoint" id="endpoint">loading…</div>
+    </div>
+    <div class="header-right">
+      <button class="header-btn" onclick="window.location.href='/'">← Back to Config</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Module status badges -->
+    <div class="status-bar" id="statusBar">
+      <span class="badge load" id="badgeDex">DEX …</span>
+      <span class="badge load" id="badgeItsm">ITSM …</span>
+      <span class="badge load" id="badgeMdm">MDM …</span>
+    </div>
+
+    <!-- Tool sections (populated by JS) -->
+    <div id="toolSections"></div>
+
+    <!-- Setup instructions -->
+    <h2>🔧 Claude Desktop Config</h2>
+    <pre><code id="claudeConfig"></code></pre>
+
+    <h2>🆚 VS Code / Continue Config</h2>
+    <pre><code id="vscodeConfig"></code></pre>
+
+    <!-- Test panel -->
+    <h2>🧪 Test Panel</h2>
+    <div class="test-panel">
+      <label>Tool</label>
+      <select id="toolSelect"><option value="">– loading –</option></select>
+      <label>Arguments (JSON)</label>
+      <textarea id="toolArgs">{}</textarea>
+      <button id="runBtn" onclick="runTest()">▶ Run Tool</button>
+      <pre id="testResult" style="min-height:60px;color:#c9d1d9;">Response will appear here…</pre>
+    </div>
+  </div>
+
+  <script>
+    const mcpUrl = `${location.origin}/api/mcp`;
+    document.getElementById("endpoint").textContent = mcpUrl;
+
+    const modules = { dex: "dex_", itsm: "itsm_", mdm: "mdm_" };
+    let allTools = [];
+
+    async function init() {
+      try {
+        const res = await fetch(mcpUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+        });
+        const data = await res.json();
+        allTools = data.result?.tools || [];
+      } catch (e) {
+        allTools = [];
+      }
+
+      // Status badges
+      for (const [mod, prefix] of Object.entries(modules)) {
+        const badge = document.getElementById(`badge${mod.charAt(0).toUpperCase()+mod.slice(1)}`);
+        const count = allTools.filter(t => t.name.startsWith(prefix)).length;
+        badge.textContent = `${mod.toUpperCase()} — ${count} tools`;
+        badge.className = count > 0 ? "badge ok" : "badge off";
+      }
+
+      // Tool sections
+      const container = document.getElementById("toolSections");
+      const groups = [
+        { label: "DEX — Neurons Platform", prefix: "dex_", color: "#28a745" },
+        { label: "ITSM — Service Management", prefix: "itsm_", color: "#ffc107" },
+        { label: "MDM — Mobile Device Management", prefix: "mdm_", color: "#17a2b8" },
+      ];
+      for (const g of groups) {
+        const tools = allTools.filter(t => t.name.startsWith(g.prefix));
+        const sec = document.createElement("div");
+        sec.className = "section";
+        sec.innerHTML = `
+          <div class="section-header" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+            <h3>${g.label}</h3>
+            <span class="count">${tools.length} tools &nbsp;▶</span>
+          </div>
+          <div class="section-body">
+            ${tools.map(t => `<div class="tool-item"><div class="tool-name">${t.name}</div><div class="tool-desc">${t.description}</div></div>`).join("")}
+          </div>`;
+        container.appendChild(sec);
+      }
+
+      // Populate test select
+      const sel = document.getElementById("toolSelect");
+      sel.innerHTML = `<option value="">— select a tool —</option>` +
+        allTools.map(t => `<option value="${t.name}">${t.name}</option>`).join("");
+
+      // Config snippets
+      document.getElementById("claudeConfig").textContent = JSON.stringify({
+        mcpServers: {
+          "ivanti-neurons": {
+            transport: "http",
+            url: mcpUrl,
+          }
+        }
+      }, null, 2);
+      document.getElementById("vscodeConfig").textContent = JSON.stringify({
+        "mcp.servers": {
+          "ivanti-neurons": {
+            transport: "http",
+            url: mcpUrl,
+          }
+        }
+      }, null, 2);
+    }
+
+    async function runTest() {
+      const name = document.getElementById("toolSelect").value;
+      const out = document.getElementById("testResult");
+      if (!name) { out.textContent = "Please select a tool."; return; }
+      let args;
+      try { args = JSON.parse(document.getElementById("toolArgs").value); }
+      catch(e) { out.textContent = "Invalid JSON in arguments."; return; }
+      out.textContent = "Running…";
+      try {
+        const res = await fetch(mcpUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jsonrpc: "2.0", id: 99, method: "tools/call", params: { name, arguments: args } }),
+        });
+        const data = await res.json();
+        out.textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        out.textContent = `Fetch error: ${e.message}`;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

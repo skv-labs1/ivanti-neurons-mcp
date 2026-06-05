@@ -7,6 +7,7 @@
 // Credentials priority:
 //   1. Custom HTTP headers (from browser admin page / test panel)
 //   2. Vercel environment variables (for Claude Desktop / VS Code)
+//   3. Hardcoded default for NEURONS_BASE_URL
 // ────────────────────────────────────────────────────────────
 
 import { dexTools,  handleDexTool  } from "../lib/tools/dex.js";
@@ -15,10 +16,12 @@ import { mdmTools,  handleMdmTool  } from "../lib/tools/mdm.js";
 
 const SERVER_INFO = {
   name: "ivanti-neurons-mcp",
-  version: "1.0.0",
+  version: "1.1.0",
 };
 
 const PROTOCOL_VERSION = "2025-03-26";
+
+const DEFAULT_NEURONS_BASE_URL = "https://nvuprd-sfc.ivanticloud.com";
 
 // ── Aggregate all tool definitions ──────────────────────────
 const ALL_TOOLS = [...dexTools, ...itsmTools, ...mdmTools];
@@ -41,6 +44,7 @@ const HEADER_ENV_MAP = {
 
 /**
  * Temporarily override process.env from request headers.
+ * Falls back to hardcoded default for NEURONS_BASE_URL.
  * Returns a restore function to revert the originals.
  */
 function applyHeaderOverrides(reqHeaders) {
@@ -52,6 +56,13 @@ function applyHeaderOverrides(reqHeaders) {
       process.env[envKey] = val;
     }
   }
+
+  // Default NEURONS_BASE_URL if still not set
+  if (!process.env.NEURONS_BASE_URL) {
+    originals.NEURONS_BASE_URL = process.env.NEURONS_BASE_URL;
+    process.env.NEURONS_BASE_URL = DEFAULT_NEURONS_BASE_URL;
+  }
+
   return function restore() {
     for (const [envKey, orig] of Object.entries(originals)) {
       if (orig === undefined) delete process.env[envKey];

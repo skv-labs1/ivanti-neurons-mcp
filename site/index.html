@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ivanti Neurons MCP Server</title>
+  <title>Dashboard — Ivanti Neurons MCP</title>
   <style>
     :root {
       --ivanti-red: #E31837;
@@ -149,9 +149,9 @@
 <body>
   <div class="header">
     <h1><span>Ivanti Neurons</span> MCP Server</h1>
-    <div class="version">v1.0.0 &bull; MCP Protocol 2025-03-26</div>
+    <div class="version">v1.1.0 &bull; MCP Protocol 2025-03-26</div>
     <div class="endpoint" id="endpoint">loading…</div>
-    <div><a class="admin-link" href="/admin.html">🔐 Manage Credentials</a></div>
+    <div><a class="admin-link" href="/">🔐 Manage Credentials</a></div>
   </div>
 
   <div class="container">
@@ -187,7 +187,6 @@
     const modules = { dex: "dex_", itsm: "itsm_", mdm: "mdm_" };
     let allTools = [];
 
-    // ── Build credential headers from sessionStorage ─────
     function credHeaders() {
       const map = {
         mcp_NEURONS_BASE_URL:     "x-neurons-base-url",

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — Ivanti Neurons MCP</title>
+  <title>Ivanti Neurons MCP — Setup</title>
   <style>
     :root {
       --ivanti-red: #E31837;
@@ -73,6 +73,14 @@
       cursor: pointer; padding: 0.5rem 0.65rem; font-size: 0.8rem;
     }
     .input-wrap button.toggle:hover { color: var(--white); }
+    .static-val {
+      padding: 0.55rem 0.75rem;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: monospace; font-size: 0.85rem;
+      color: var(--green);
+    }
 
     .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
     button.primary {
@@ -116,9 +124,9 @@
 </head>
 <body>
   <div class="header">
-    <h1>🔐 <span>Credentials</span> Manager</h1>
-    <div class="sub">Ivanti Neurons MCP Server — Browser-session credentials</div>
-    <div style="margin-top:0.5rem"><a href="/">← Back to Dashboard</a></div>
+    <h1><span>Ivanti Neurons</span> MCP Server</h1>
+    <div class="sub">Enter your credentials to get started</div>
+    <div style="margin-top:0.5rem"><a href="/dashboard">→ Go to Dashboard</a></div>
   </div>
 
   <div class="container">
@@ -128,9 +136,7 @@
       <div class="section-title"><span class="dot" id="dotDex"></span> DEX — Neurons Platform</div>
       <div class="field">
         <label>Neurons Base URL</label>
-        <div class="input-wrap">
-          <input type="text" id="NEURONS_BASE_URL" placeholder="https://tenant.ivanticloud.com" />
-        </div>
+        <div class="static-val">https://nvuprd-sfc.ivanticloud.com</div>
       </div>
       <div class="field">
         <label>Bearer Token</label>
@@ -197,7 +203,7 @@
 
     <!-- Action buttons -->
     <div class="btn-row" style="justify-content:center; margin-top:0.5rem;">
-      <button class="primary" onclick="saveAll()">💾 Save All</button>
+      <button class="primary" onclick="saveAll()">💾 Save &amp; Continue</button>
       <button class="secondary" onclick="testAll()">🧪 Test All</button>
       <button class="danger" onclick="clearAll()">🗑 Clear All</button>
     </div>
@@ -213,34 +219,43 @@
   </div>
 
   <script>
-    const KEYS = [
-      "NEURONS_BASE_URL", "NEURONS_BEARER_TOKEN",
+    const NEURONS_BASE_URL_DEFAULT = "https://nvuprd-sfc.ivanticloud.com";
+
+    const INPUT_KEYS = [
+      "NEURONS_BEARER_TOKEN",
       "ITSM_BASE_URL", "ITSM_API_KEY",
       "MDM_BASE_URL", "MDM_USERNAME", "MDM_PASSWORD",
     ];
 
+    const ALL_KEYS = ["NEURONS_BASE_URL", ...INPUT_KEYS];
+
     const mcpUrl = `${location.origin}/api/mcp`;
 
     function loadAll() {
-      for (const k of KEYS) {
+      for (const k of INPUT_KEYS) {
         const v = sessionStorage.getItem(`mcp_${k}`) || "";
         document.getElementById(k).value = v;
       }
     }
 
     function saveAll() {
-      for (const k of KEYS) {
+      sessionStorage.setItem("mcp_NEURONS_BASE_URL", NEURONS_BASE_URL_DEFAULT);
+
+      for (const k of INPUT_KEYS) {
         const v = document.getElementById(k).value.trim();
         if (v) sessionStorage.setItem(`mcp_${k}`, v);
         else   sessionStorage.removeItem(`mcp_${k}`);
       }
-      alert("✅ Credentials saved to session.");
+
+      window.location.href = "/dashboard";
     }
 
     function clearAll() {
       if (!confirm("Clear all stored credentials?")) return;
-      for (const k of KEYS) {
+      for (const k of ALL_KEYS) {
         sessionStorage.removeItem(`mcp_${k}`);
+      }
+      for (const k of INPUT_KEYS) {
         document.getElementById(k).value = "";
       }
       for (const m of ["Dex","Itsm","Mdm"]) {
@@ -256,14 +271,15 @@
 
     function credHeaders() {
       const h = {};
+      h["x-neurons-base-url"] = NEURONS_BASE_URL_DEFAULT;
+
       const map = {
-        NEURONS_BASE_URL:    "x-neurons-base-url",
-        NEURONS_BEARER_TOKEN:"x-neurons-bearer-token",
-        ITSM_BASE_URL:       "x-itsm-base-url",
-        ITSM_API_KEY:        "x-itsm-api-key",
-        MDM_BASE_URL:        "x-mdm-base-url",
-        MDM_USERNAME:        "x-mdm-username",
-        MDM_PASSWORD:        "x-mdm-password",
+        NEURONS_BEARER_TOKEN: "x-neurons-bearer-token",
+        ITSM_BASE_URL:        "x-itsm-base-url",
+        ITSM_API_KEY:         "x-itsm-api-key",
+        MDM_BASE_URL:         "x-mdm-base-url",
+        MDM_USERNAME:         "x-mdm-username",
+        MDM_PASSWORD:         "x-mdm-password",
       };
       for (const [key, header] of Object.entries(map)) {
         const v = document.getElementById(key).value.trim();

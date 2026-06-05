@@ -2,6 +2,8 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/dashboard", "destination": "/site/index.html" },
+    { "source": "/command-center", "destination": "/site/command-center.html" },
+    { "source": "/cheatsheet", "destination": "/site/cheatsheet.html" },
     { "source": "/", "destination": "/site/admin.html" },
     { "source": "/(.*)", "destination": "/site/$1" }
   ],

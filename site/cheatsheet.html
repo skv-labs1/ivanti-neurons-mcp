@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Ivanti Neurons MCP — Demo Prompt Cheat Sheet</title>
+<style>
+:root{--red:#E31837;--dark:#1a1a2e}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,sans-serif;background:#fff;color:#222;line-height:1.6}
+.header{background:var(--dark);color:#fff;padding:2.5rem 2rem;text-align:center}
+.header h1{font-size:2rem;margin-bottom:0.25rem}
+.header h1 span{color:var(--red)}
+.header .sub{color:#999;font-size:1rem}
+.container{max-width:860px;margin:0 auto;padding:2rem 1.5rem}
+h2{color:var(--red);font-size:1.35rem;margin:2.5rem 0 0.75rem;padding-bottom:0.35rem;border-bottom:2px solid #eee}
+h2:first-of-type{margin-top:0.5rem}
+h3{font-size:1rem;margin:1.5rem 0 0.5rem;color:#333}
+.when{background:#f8f9fa;border-left:3px solid var(--red);padding:0.5rem 0.75rem;margin-bottom:0.75rem;font-size:0.88rem;color:#555}
+.prompt-box{background:#1a1a2e;color:#c9d1d9;border-radius:8px;padding:1rem 1.25rem;font-family:"SF Mono","Fira Code",Consolas,monospace;font-size:0.82rem;line-height:1.55;white-space:pre-wrap;overflow-x:auto;margin-bottom:1.5rem;border:1px solid #333}
+.script-box{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:8px;padding:1rem 1.25rem;font-size:0.88rem;margin-bottom:1rem;color:#333}
+.script-box b{color:var(--red)}
+.ref-table{width:100%;border-collapse:collapse;font-size:0.88rem;margin:0.75rem 0}
+.ref-table th{text-align:left;padding:0.5rem;background:#f0f0f0;font-weight:700;border-bottom:2px solid #ddd}
+.ref-table td{padding:0.5rem;border-bottom:1px solid #eee}
+.ref-table code{background:#eee;padding:0.1rem 0.4rem;border-radius:3px;font-size:0.82rem}
+.tip{background:#fff8e1;border-left:3px solid #ffc107;padding:0.5rem 0.75rem;margin:0.75rem 0;font-size:0.85rem;color:#7a6200}
+.footer{text-align:center;padding:1.5rem;color:#999;font-size:0.8rem;border-top:1px solid #eee;margin-top:2rem}
+@media print{
+  body{font-size:11pt}
+  .header{padding:1.5rem;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .prompt-box{font-size:9pt;break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h2{break-before:auto;break-after:avoid}
+  .container{padding:0.5rem}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1><span>Ivanti Neurons MCP</span></h1>
+  <div class="sub">Demo Prompt Cheat Sheet — AI-Powered IT Dashboards</div>
+</div>
+<div class="container">
+
+<h2>1. Executive Dashboard</h2>
+<div class="when">🎯 <b>When to use:</b> Opening a demo. "Let me show you what AI can do with your real environment data."</div>
+<div class="prompt-box">Using the Ivanti Neurons MCP tools, build me a single-file HTML executive
+dashboard. Here's what I need:
+
+1. First, call these tools to get real data:
+   - dex_get_environment_summary (device, patch, vuln, software counts)
+   - dex_list_vulnerabilities with $top=100 (get severity breakdown)
+   - dex_list_devices with $top=50 (get OS and manufacturer breakdown)
+   - dex_list_patches with $top=50 (get patch status)
+
+2. Then generate a single self-contained HTML file with:
+   - Dark theme (#1a1a2e background, #E31837 red accent — Ivanti brand colors)
+   - Top row: 4 big KPI cards (Total Devices, Patches, Vulnerabilities, Software)
+   - Second row: Vulnerability severity donut chart (Critical/High/Medium/Low)
+     using inline SVG, and a Device OS breakdown bar chart using inline SVG
+   - Third row: Top 10 vulnerabilities table (name, severity, affected count)
+     and Top manufacturers table
+   - Bottom: "Powered by Ivanti Neurons MCP" footer with timestamp
+   - Responsive layout, professional look, no external dependencies
+   - Use the REAL data from the API calls above — not placeholder data
+
+Save it as executive-dashboard.html</div>
+
+<h2>2. Patch &amp; Security Posture</h2>
+<div class="when">🎯 <b>When to use:</b> Security-focused conversations. CISO / SecOps audience.</div>
+<div class="prompt-box">Using the Ivanti Neurons MCP tools, build me a Patch &amp; Security posture
+dashboard as a single HTML file.
+
+1. Fetch real data:
+   - dex_list_vulnerabilities with $top=200
+   - dex_list_patches with $top=200
+   - dex_get_environment_summary
+
+2. Generate the HTML with:
+   - Ivanti dark theme (#1a1a2e, accent #E31837)
+   - Risk score card (0-100 based on critical/high vuln ratio) with color coding
+   - Vulnerability severity breakdown — donut chart (inline SVG)
+   - Top 15 critical/high vulnerabilities — sortable table
+   - Patch coverage stats — how many patches available vs applied
+   - A "remediation priority" section — top 5 things to fix first
+   - All real data, no placeholders, no external dependencies
+
+Save as patch-security-dashboard.html</div>
+
+<h2>3. ITSM Service Health</h2>
+<div class="when">🎯 <b>When to use:</b> Service management conversations. IT Ops / Service Delivery audience.</div>
+<div class="prompt-box">Using the Ivanti Neurons MCP tools, build me an ITSM Service Health
+dashboard as a single HTML file.
+
+1. Fetch real data:
+   - itsm_get_dashboard_stats
+   - itsm_search_incidents with $top=50 and $orderby=CreatedDateTime desc
+   - itsm_search_service_requests with $top=50
+   - itsm_search_changes with $top=20
+
+2. Generate the HTML with:
+   - Ivanti dark theme (#1a1a2e, accent #E31837)
+   - KPI cards: Active Incidents, Open SRs, Pending Changes
+   - Incidents by Priority — horizontal bar chart (inline SVG)
+   - Incidents by Category — bar chart
+   - Recent incidents table (last 20) with status, priority, subject, age
+   - Upcoming changes table with risk level color coding
+   - All real data, no external dependencies
+
+Save as itsm-dashboard.html</div>
+
+<h2>4. IT Asset Management</h2>
+<div class="when">🎯 <b>When to use:</b> ITAM conversations. Demonstrating hardware/software visibility.</div>
+<div class="prompt-box">Using the Ivanti Neurons MCP tools, build me an IT Asset Management
+dashboard as a single HTML file.
+
+1. Fetch real data:
+   - dex_get_environment_summary
+   - dex_list_software with $top=100
+   - dex_list_devices with $top=100
+
+2. Generate the HTML with:
+   - Ivanti dark theme (#1a1a2e, accent #E31837)
+   - KPI cards: Total Devices, Total Software Titles, Total Installs
+   - Top 20 installed software — horizontal bar chart (inline SVG)
+   - Device breakdown by OS — donut chart
+   - Device breakdown by manufacturer — bar chart
+   - Software inventory table (name, publisher, version, install count)
+   - All real data, no external dependencies
+
+Save as itam-dashboard.html</div>
+
+<h2>5. The "Wow" Prompt — Full Command Center</h2>
+<div class="when">🎯 <b>When to use:</b> Big demos. Executive briefings. The showstopper.</div>
+<div class="prompt-box">You are connected to an Ivanti Neurons environment via MCP. I want you to
+build me a complete IT Operations Command Center as a single HTML file.
+
+Step 1 — Gather data by calling these MCP tools:
+- dex_get_environment_summary
+- dex_list_vulnerabilities ($top=100)
+- dex_list_devices ($top=100)
+- dex_list_patches ($top=100)
+- dex_list_software ($top=50)
+
+Step 2 — Build a tabbed single-page HTML dashboard with these views:
+
+Tab 1 "Executive Summary":
+- 4 KPI cards (devices, patches, vulns, software)
+- Vulnerability severity donut chart
+- Device OS breakdown chart
+- Overall risk score (0-100)
+
+Tab 2 "Security Posture":
+- Critical/High vulnerability count callout
+- Top 15 vulnerabilities table
+- Patch coverage percentage
+- Remediation priorities
+
+Tab 3 "Asset Inventory":
+- Top 20 software bar chart
+- Device manufacturer breakdown
+- Hardware summary table
+
+Design requirements:
+- Dark theme: background #1a1a2e, accent #E31837 (Ivanti red)
+- All charts as inline SVG — zero external dependencies
+- Tabbed navigation, smooth tab switching
+- Responsive layout
+- "Powered by Ivanti Neurons MCP" footer with generation timestamp
+- Use ONLY real data from the API calls — no fake data
+
+Save as it-command-center.html</div>
+
+<h2>6. Demo Talk Track</h2>
+<div class="script-box">
+<b>Opening:</b><br/>
+"Let me show you something. I have an AI assistant connected to your Ivanti Neurons environment through MCP — the Model Context Protocol. Watch what happens when I ask it to build a dashboard."<br/><br/>
+<b>While it builds (60-90 seconds):</b><br/>
+"Notice what's happening — the AI is calling your real APIs. It's pulling device data, vulnerability data, patch data from Neurons. No pre-built templates, no custom code. It's generating this from scratch using your live data."<br/><br/>
+<b>When it renders:</b><br/>
+"And here's the result — a complete IT operations command center. This is YOUR real data. Built in under two minutes."<br/><br/>
+<b>The close:</b><br/>
+"Now imagine giving your IT team this capability. They ask a question in plain English — 'which devices are missing the latest Windows patch?' — and the AI builds the answer from your live environment. That's Ivanti Neurons with MCP."
+</div>
+<div class="tip">💡 <b>Pro tip:</b> Before the demo, go to the Setup page and enter a fresh bearer token. Test with "Test DEX" to make sure the API is responding. Tokens expire — don't get caught with a stale one on stage.</div>
+
+<h2>7. Quick Reference</h2>
+<table class="ref-table">
+<tr><th>Item</th><th>Value</th></tr>
+<tr><td>MCP Endpoint</td><td><code>https://ivanti-neurons-mcp.vercel.app/api/mcp</code></td></tr>
+<tr><td>Setup Page</td><td><code>https://ivanti-neurons-mcp.vercel.app/</code></td></tr>
+<tr><td>Command Center</td><td><code>https://ivanti-neurons-mcp.vercel.app/command-center</code></td></tr>
+<tr><td>Dashboard</td><td><code>https://ivanti-neurons-mcp.vercel.app/dashboard</code></td></tr>
+<tr><td>Cheat Sheet</td><td><code>https://ivanti-neurons-mcp.vercel.app/cheatsheet</code></td></tr>
+<tr><td>Neurons Tenant</td><td><code>https://nvuprd-sfc.ivanticloud.com</code></td></tr>
+<tr><td>Total MCP Tools</td><td>24 (6 DEX + 10 ITSM + 8 MDM)</td></tr>
+</table>
+
+<h3>Claude Desktop Config</h3>
+<div class="prompt-box">{
+  "mcpServers": {
+    "ivanti-neurons": {
+      "transport": "http",
+      "url": "https://ivanti-neurons-mcp.vercel.app/api/mcp"
+    }
+  }
+}</div>
+
+<h3>VS Code Config</h3>
+<div class="prompt-box">{
+  "mcp.servers": {
+    "ivanti-neurons": {
+      "transport": "http",
+      "url": "https://ivanti-neurons-mcp.vercel.app/api/mcp"
+    }
+  }
+}</div>
+
+</div>
+<div class="footer">Ivanti Neurons MCP — Presales Demo Kit · Sumit Karmarkar · Senior Solutions Architect</div>
+</body>
+</html>

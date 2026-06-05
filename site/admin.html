@@ -32,7 +32,6 @@
     .header a { color: var(--ivanti-red); text-decoration: none; font-size: 0.85rem; }
     .header a:hover { text-decoration: underline; }
     .container { max-width: 700px; margin: 0 auto; padding: 2rem 1rem; }
-
     .section {
       background: rgba(255,255,255,0.03);
       border: 1px solid var(--border);
@@ -50,7 +49,6 @@
     }
     .section-title .dot.ok  { background: var(--green); }
     .section-title .dot.err { background: var(--red); }
-
     .field { margin-bottom: 0.85rem; }
     .field label {
       display: block; font-size: 0.8rem; color: var(--gray);
@@ -81,7 +79,6 @@
       font-family: monospace; font-size: 0.85rem;
       color: var(--green);
     }
-
     .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
     button.primary {
       background: var(--ivanti-red); color: var(--white);
@@ -104,7 +101,6 @@
       border-radius: 6px; font-weight: 600; font-size: 0.85rem;
       cursor: pointer;
     }
-
     .status {
       margin-top: 0.65rem; padding: 0.5rem 0.75rem;
       border-radius: 6px; font-size: 0.8rem; font-family: monospace;
@@ -113,7 +109,6 @@
     .status.ok  { display: block; background: rgba(40,167,69,0.15); color: var(--green); border: 1px solid rgba(40,167,69,0.3); }
     .status.err { display: block; background: rgba(220,53,69,0.15); color: var(--red); border: 1px solid rgba(220,53,69,0.3); }
     .status.loading { display: block; background: rgba(255,193,7,0.1); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); }
-
     .note {
       margin-top: 2rem; padding: 1rem; border-radius: 8px;
       background: rgba(255,255,255,0.03); border: 1px solid var(--border);
@@ -126,12 +121,9 @@
   <div class="header">
     <h1><span>Ivanti Neurons</span> MCP Server</h1>
     <div class="sub">Enter your credentials to get started</div>
-    <div style="margin-top:0.5rem"><a href="/dashboard">→ Go to Dashboard</a></div>
+    <div style="margin-top:0.5rem"><a href="/command-center">→ Go to Command Center</a> · <a href="/dashboard">Tools</a> · <a href="/cheatsheet">Demo Prompts</a></div>
   </div>
-
   <div class="container">
-
-    <!-- DEX -->
     <div class="section">
       <div class="section-title"><span class="dot" id="dotDex"></span> DEX — Neurons Platform</div>
       <div class="field">
@@ -150,8 +142,6 @@
       </div>
       <div class="status" id="statusDex"></div>
     </div>
-
-    <!-- ITSM -->
     <div class="section">
       <div class="section-title"><span class="dot" id="dotItsm"></span> ITSM — Service Management</div>
       <div class="field">
@@ -172,8 +162,6 @@
       </div>
       <div class="status" id="statusItsm"></div>
     </div>
-
-    <!-- MDM -->
     <div class="section">
       <div class="section-title"><span class="dot" id="dotMdm"></span> MDM — Mobile Device Management</div>
       <div class="field">
@@ -200,14 +188,11 @@
       </div>
       <div class="status" id="statusMdm"></div>
     </div>
-
-    <!-- Action buttons -->
     <div class="btn-row" style="justify-content:center; margin-top:0.5rem;">
       <button class="primary" onclick="saveAll()">💾 Save &amp; Continue</button>
       <button class="secondary" onclick="testAll()">🧪 Test All</button>
       <button class="danger" onclick="clearAll()">🗑 Clear All</button>
     </div>
-
     <div class="note">
       <strong>ℹ How this works:</strong><br />
       Credentials are stored in your browser's <code>sessionStorage</code> (cleared when you close the tab).
@@ -215,20 +200,15 @@
       For <strong>Claude Desktop / VS Code</strong> connections, set these as
       <strong>Vercel Environment Variables</strong> instead (Settings → Environment Variables).
     </div>
-
   </div>
-
   <script>
     const NEURONS_BASE_URL_DEFAULT = "https://nvuprd-sfc.ivanticloud.com";
-
     const INPUT_KEYS = [
       "NEURONS_BEARER_TOKEN",
       "ITSM_BASE_URL", "ITSM_API_KEY",
       "MDM_BASE_URL", "MDM_USERNAME", "MDM_PASSWORD",
     ];
-
     const ALL_KEYS = ["NEURONS_BASE_URL", ...INPUT_KEYS];
-
     const mcpUrl = `${location.origin}/api/mcp`;
 
     function loadAll() {
@@ -237,49 +217,32 @@
         document.getElementById(k).value = v;
       }
     }
-
     function saveAll() {
       sessionStorage.setItem("mcp_NEURONS_BASE_URL", NEURONS_BASE_URL_DEFAULT);
-
       for (const k of INPUT_KEYS) {
         const v = document.getElementById(k).value.trim();
         if (v) sessionStorage.setItem(`mcp_${k}`, v);
         else   sessionStorage.removeItem(`mcp_${k}`);
       }
-
-      window.location.href = "/dashboard";
+      window.location.href = "/command-center";
     }
-
     function clearAll() {
       if (!confirm("Clear all stored credentials?")) return;
-      for (const k of ALL_KEYS) {
-        sessionStorage.removeItem(`mcp_${k}`);
-      }
-      for (const k of INPUT_KEYS) {
-        document.getElementById(k).value = "";
-      }
-      for (const m of ["Dex","Itsm","Mdm"]) {
-        setDot(m, "");
-        setStatus(m, "", "");
-      }
+      for (const k of ALL_KEYS) sessionStorage.removeItem(`mcp_${k}`);
+      for (const k of INPUT_KEYS) document.getElementById(k).value = "";
+      for (const m of ["Dex","Itsm","Mdm"]) { setDot(m,""); setStatus(m,"",""); }
     }
-
     function toggleVis(btn) {
       const inp = btn.previousElementSibling;
       inp.type = inp.type === "password" ? "text" : "password";
     }
-
     function credHeaders() {
       const h = {};
       h["x-neurons-base-url"] = NEURONS_BASE_URL_DEFAULT;
-
       const map = {
-        NEURONS_BEARER_TOKEN: "x-neurons-bearer-token",
-        ITSM_BASE_URL:        "x-itsm-base-url",
-        ITSM_API_KEY:         "x-itsm-api-key",
-        MDM_BASE_URL:         "x-mdm-base-url",
-        MDM_USERNAME:         "x-mdm-username",
-        MDM_PASSWORD:         "x-mdm-password",
+        NEURONS_BEARER_TOKEN:"x-neurons-bearer-token",
+        ITSM_BASE_URL:"x-itsm-base-url", ITSM_API_KEY:"x-itsm-api-key",
+        MDM_BASE_URL:"x-mdm-base-url", MDM_USERNAME:"x-mdm-username", MDM_PASSWORD:"x-mdm-password",
       };
       for (const [key, header] of Object.entries(map)) {
         const v = document.getElementById(key).value.trim();
@@ -287,60 +250,25 @@
       }
       return h;
     }
-
-    function setDot(mod, state) {
-      const dot = document.getElementById(`dot${mod}`);
-      dot.className = `dot ${state}`;
-    }
-    function setStatus(mod, cls, msg) {
-      const el = document.getElementById(`status${mod}`);
-      el.className = `status ${cls}`;
-      el.textContent = msg;
-    }
-
+    function setDot(mod, state) { document.getElementById(`dot${mod}`).className = `dot ${state}`; }
+    function setStatus(mod, cls, msg) { const el = document.getElementById(`status${mod}`); el.className = `status ${cls}`; el.textContent = msg; }
     async function testModule(mod) {
       const modCap = mod.charAt(0).toUpperCase() + mod.slice(1);
-      setDot(modCap, "");
-      setStatus(modCap, "loading", "Testing…");
-
-      const toolMap = {
-        dex:  "dex_get_environment_summary",
-        itsm: "itsm_get_dashboard_stats",
-        mdm:  "mdm_list_devices",
-      };
-      const argsMap = {
-        dex: {}, itsm: {}, mdm: { rows: 1 },
-      };
-
+      setDot(modCap,""); setStatus(modCap,"loading","Testing…");
+      const toolMap = { dex:"dex_get_environment_summary", itsm:"itsm_get_dashboard_stats", mdm:"mdm_list_devices" };
+      const argsMap = { dex:{}, itsm:{}, mdm:{rows:1} };
       try {
         const res = await fetch(mcpUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", ...credHeaders() },
-          body: JSON.stringify({
-            jsonrpc: "2.0", id: 1,
-            method: "tools/call",
-            params: { name: toolMap[mod], arguments: argsMap[mod] },
-          }),
+          method:"POST", headers:{"Content-Type":"application/json",...credHeaders()},
+          body: JSON.stringify({jsonrpc:"2.0",id:1,method:"tools/call",params:{name:toolMap[mod],arguments:argsMap[mod]}}),
         });
         const data = await res.json();
         const content = data.result?.content?.[0]?.text || "";
-        if (data.result?.isError) {
-          setDot(modCap, "err");
-          setStatus(modCap, "err", `❌ ${content}`);
-        } else {
-          setDot(modCap, "ok");
-          setStatus(modCap, "ok", `✅ Connected — ${content.substring(0, 200)}`);
-        }
-      } catch (e) {
-        setDot(modCap, "err");
-        setStatus(modCap, "err", `❌ Fetch error: ${e.message}`);
-      }
+        if (data.result?.isError) { setDot(modCap,"err"); setStatus(modCap,"err",`❌ ${content}`); }
+        else { setDot(modCap,"ok"); setStatus(modCap,"ok",`✅ Connected — ${content.substring(0,200)}`); }
+      } catch(e) { setDot(modCap,"err"); setStatus(modCap,"err",`❌ Fetch error: ${e.message}`); }
     }
-
-    async function testAll() {
-      await Promise.all(["dex", "itsm", "mdm"].map(testModule));
-    }
-
+    async function testAll() { await Promise.all(["dex","itsm","mdm"].map(testModule)); }
     loadAll();
   </script>
 </body>

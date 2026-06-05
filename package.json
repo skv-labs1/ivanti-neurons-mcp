@@ -1,0 +1,13 @@
+{
+  "name": "ivanti-neurons-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP Server for Ivanti Neurons – DEX, ITSM & MDM",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

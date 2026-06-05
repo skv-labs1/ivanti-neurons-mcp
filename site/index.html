@@ -26,13 +26,7 @@
       border-bottom: 3px solid var(--ivanti-red);
       padding: 2rem;
       text-align: center;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
-    .header-left { flex: 1; text-align: left; }
-    .header-center { flex: 1; text-align: center; }
-    .header-right { flex: 1; text-align: right; }
     .header h1 { font-size: 2rem; margin-bottom: 0.25rem; }
     .header h1 span { color: var(--ivanti-red); }
     .header .version { color: var(--gray); font-size: 0.9rem; }
@@ -47,20 +41,12 @@
       color: var(--green);
       border: 1px solid rgba(255,255,255,0.1);
     }
-    .header-btn {
-      background: var(--gray);
-      color: var(--white);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.2s;
+    .header .admin-link {
+      display: inline-block; margin-top: 0.75rem;
+      color: var(--ivanti-red); text-decoration: none;
+      font-size: 0.9rem; font-weight: 600;
     }
-    .header-btn:hover {
-      background: #5a636a;
-      transform: translateY(-2px);
-    }
+    .header .admin-link:hover { text-decoration: underline; }
     .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
     .status-bar {
       display: flex; gap: 1rem; flex-wrap: wrap;
@@ -75,7 +61,6 @@
     .badge.off  { background: var(--gray);  color: var(--white); }
     .badge.load { background: #ffc107;      color: var(--dark); }
 
-    /* Sections */
     .section { margin-bottom: 1.5rem; }
     .section-header {
       background: rgba(255,255,255,0.06);
@@ -91,8 +76,6 @@
     .section-header:hover { background: rgba(255,255,255,0.1); }
     .section-header h3 { font-size: 1rem; }
     .section-header .count { color: var(--gray); font-size: 0.85rem; }
-    .section-header .arrow { transition: transform 0.3s; }
-    .section-header.open .arrow { transform: rotate(90deg); }
     .section-body {
       display: none;
       border: 1px solid rgba(255,255,255,0.08);
@@ -110,7 +93,6 @@
     .tool-name { font-family: monospace; color: var(--ivanti-red); font-weight: 600; font-size: 0.9rem; }
     .tool-desc { color: var(--gray); font-size: 0.85rem; margin-top: 0.15rem; }
 
-    /* Setup */
     h2 { font-size: 1.25rem; margin: 2rem 0 1rem; color: var(--ivanti-red); }
     pre {
       background: rgba(255,255,255,0.05);
@@ -124,7 +106,6 @@
     }
     code { font-family: "SF Mono", "Fira Code", monospace; }
 
-    /* Test panel */
     .test-panel {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.1);
@@ -144,6 +125,10 @@
       background: rgba(255,255,255,0.06);
       color: var(--white);
     }
+    .test-panel select option {
+      background: #1a1a2e;
+      color: #ffffff;
+    }
     .test-panel textarea { min-height: 60px; resize: vertical; }
     .test-panel button {
       background: var(--ivanti-red);
@@ -159,44 +144,31 @@
       max-height: 300px;
       overflow-y: auto;
     }
-    @media (max-width: 768px) {
-      .header { flex-direction: column; gap: 1rem; text-align: center; }
-      .header-left, .header-right { text-align: center; }
-    }
   </style>
 </head>
 <body>
   <div class="header">
-    <div class="header-left"></div>
-    <div class="header-center">
-      <h1><span>Ivanti Neurons</span> MCP Server</h1>
-      <div class="version">v1.0.0 &bull; MCP Protocol 2025-03-26</div>
-      <div class="endpoint" id="endpoint">loading…</div>
-    </div>
-    <div class="header-right">
-      <button class="header-btn" onclick="window.location.href='/'">← Back to Config</button>
-    </div>
+    <h1><span>Ivanti Neurons</span> MCP Server</h1>
+    <div class="version">v1.0.0 &bull; MCP Protocol 2025-03-26</div>
+    <div class="endpoint" id="endpoint">loading…</div>
+    <div><a class="admin-link" href="/admin.html">🔐 Manage Credentials</a></div>
   </div>
 
   <div class="container">
-    <!-- Module status badges -->
     <div class="status-bar" id="statusBar">
       <span class="badge load" id="badgeDex">DEX …</span>
       <span class="badge load" id="badgeItsm">ITSM …</span>
       <span class="badge load" id="badgeMdm">MDM …</span>
     </div>
 
-    <!-- Tool sections (populated by JS) -->
     <div id="toolSections"></div>
 
-    <!-- Setup instructions -->
     <h2>🔧 Claude Desktop Config</h2>
     <pre><code id="claudeConfig"></code></pre>
 
     <h2>🆚 VS Code / Continue Config</h2>
     <pre><code id="vscodeConfig"></code></pre>
 
-    <!-- Test panel -->
     <h2>🧪 Test Panel</h2>
     <div class="test-panel">
       <label>Tool</label>
@@ -215,11 +187,30 @@
     const modules = { dex: "dex_", itsm: "itsm_", mdm: "mdm_" };
     let allTools = [];
 
+    // ── Build credential headers from sessionStorage ─────
+    function credHeaders() {
+      const map = {
+        mcp_NEURONS_BASE_URL:     "x-neurons-base-url",
+        mcp_NEURONS_BEARER_TOKEN: "x-neurons-bearer-token",
+        mcp_ITSM_BASE_URL:        "x-itsm-base-url",
+        mcp_ITSM_API_KEY:         "x-itsm-api-key",
+        mcp_MDM_BASE_URL:         "x-mdm-base-url",
+        mcp_MDM_USERNAME:         "x-mdm-username",
+        mcp_MDM_PASSWORD:         "x-mdm-password",
+      };
+      const h = {};
+      for (const [storageKey, header] of Object.entries(map)) {
+        const v = sessionStorage.getItem(storageKey);
+        if (v) h[header] = v;
+      }
+      return h;
+    }
+
     async function init() {
       try {
         const res = await fetch(mcpUrl, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...credHeaders() },
           body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
         });
         const data = await res.json();
@@ -228,7 +219,6 @@
         allTools = [];
       }
 
-      // Status badges
       for (const [mod, prefix] of Object.entries(modules)) {
         const badge = document.getElementById(`badge${mod.charAt(0).toUpperCase()+mod.slice(1)}`);
         const count = allTools.filter(t => t.name.startsWith(prefix)).length;
@@ -236,12 +226,11 @@
         badge.className = count > 0 ? "badge ok" : "badge off";
       }
 
-      // Tool sections
       const container = document.getElementById("toolSections");
       const groups = [
-        { label: "DEX — Neurons Platform", prefix: "dex_", color: "#28a745" },
-        { label: "ITSM — Service Management", prefix: "itsm_", color: "#ffc107" },
-        { label: "MDM — Mobile Device Management", prefix: "mdm_", color: "#17a2b8" },
+        { label: "DEX — Neurons Platform", prefix: "dex_" },
+        { label: "ITSM — Service Management", prefix: "itsm_" },
+        { label: "MDM — Mobile Device Management", prefix: "mdm_" },
       ];
       for (const g of groups) {
         const tools = allTools.filter(t => t.name.startsWith(g.prefix));
@@ -258,26 +247,18 @@
         container.appendChild(sec);
       }
 
-      // Populate test select
       const sel = document.getElementById("toolSelect");
       sel.innerHTML = `<option value="">— select a tool —</option>` +
         allTools.map(t => `<option value="${t.name}">${t.name}</option>`).join("");
 
-      // Config snippets
       document.getElementById("claudeConfig").textContent = JSON.stringify({
         mcpServers: {
-          "ivanti-neurons": {
-            transport: "http",
-            url: mcpUrl,
-          }
+          "ivanti-neurons": { transport: "http", url: mcpUrl }
         }
       }, null, 2);
       document.getElementById("vscodeConfig").textContent = JSON.stringify({
         "mcp.servers": {
-          "ivanti-neurons": {
-            transport: "http",
-            url: mcpUrl,
-          }
+          "ivanti-neurons": { transport: "http", url: mcpUrl }
         }
       }, null, 2);
     }
@@ -293,8 +274,11 @@
       try {
         const res = await fetch(mcpUrl, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jsonrpc: "2.0", id: 99, method: "tools/call", params: { name, arguments: args } }),
+          headers: { "Content-Type": "application/json", ...credHeaders() },
+          body: JSON.stringify({
+            jsonrpc: "2.0", id: 99, method: "tools/call",
+            params: { name, arguments: args },
+          }),
         });
         const data = await res.json();
         out.textContent = JSON.stringify(data, null, 2);

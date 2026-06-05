@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Ivanti Neurons MCP</title>
+  <style>
+    :root {
+      --ivanti-red: #E31837;
+      --dark: #1a1a2e;
+      --dark2: #16213e;
+      --white: #ffffff;
+      --gray: #6c757d;
+      --green: #28a745;
+      --red: #dc3545;
+      --input-bg: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.12);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--dark); color: var(--white); min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--dark), var(--dark2));
+      border-bottom: 3px solid var(--ivanti-red);
+      padding: 1.5rem 2rem; text-align: center;
+    }
+    .header h1 { font-size: 1.75rem; }
+    .header h1 span { color: var(--ivanti-red); }
+    .header .sub { color: var(--gray); font-size: 0.9rem; margin-top: 0.25rem; }
+    .header a { color: var(--ivanti-red); text-decoration: none; font-size: 0.85rem; }
+    .header a:hover { text-decoration: underline; }
+    .container { max-width: 700px; margin: 0 auto; padding: 2rem 1rem; }
+
+    .section {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-title {
+      font-size: 1rem; font-weight: 700; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .section-title .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--gray); display: inline-block;
+    }
+    .section-title .dot.ok  { background: var(--green); }
+    .section-title .dot.err { background: var(--red); }
+
+    .field { margin-bottom: 0.85rem; }
+    .field label {
+      display: block; font-size: 0.8rem; color: var(--gray);
+      margin-bottom: 0.25rem; text-transform: uppercase;
+      letter-spacing: 0.04em; font-weight: 600;
+    }
+    .input-wrap {
+      display: flex; align-items: center;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden;
+    }
+    .input-wrap input {
+      flex: 1; padding: 0.55rem 0.75rem;
+      background: transparent; border: none; outline: none;
+      color: var(--white); font-family: monospace; font-size: 0.85rem;
+    }
+    .input-wrap button.toggle {
+      background: transparent; border: none; color: var(--gray);
+      cursor: pointer; padding: 0.5rem 0.65rem; font-size: 0.8rem;
+    }
+    .input-wrap button.toggle:hover { color: var(--white); }
+
+    .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    button.primary {
+      background: var(--ivanti-red); color: var(--white);
+      border: none; padding: 0.6rem 1.5rem; border-radius: 6px;
+      font-weight: 700; font-size: 0.85rem; cursor: pointer;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      transition: opacity 0.2s;
+    }
+    button.primary:hover { opacity: 0.85; }
+    button.secondary {
+      background: rgba(255,255,255,0.08); color: var(--white);
+      border: 1px solid var(--border); padding: 0.6rem 1.5rem;
+      border-radius: 6px; font-weight: 600; font-size: 0.85rem;
+      cursor: pointer; transition: background 0.2s;
+    }
+    button.secondary:hover { background: rgba(255,255,255,0.14); }
+    button.danger {
+      background: transparent; color: var(--red);
+      border: 1px solid var(--red); padding: 0.6rem 1.5rem;
+      border-radius: 6px; font-weight: 600; font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .status {
+      margin-top: 0.65rem; padding: 0.5rem 0.75rem;
+      border-radius: 6px; font-size: 0.8rem; font-family: monospace;
+      display: none; word-break: break-all;
+    }
+    .status.ok  { display: block; background: rgba(40,167,69,0.15); color: var(--green); border: 1px solid rgba(40,167,69,0.3); }
+    .status.err { display: block; background: rgba(220,53,69,0.15); color: var(--red); border: 1px solid rgba(220,53,69,0.3); }
+    .status.loading { display: block; background: rgba(255,193,7,0.1); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); }
+
+    .note {
+      margin-top: 2rem; padding: 1rem; border-radius: 8px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      color: var(--gray); font-size: 0.82rem; line-height: 1.5;
+    }
+    .note strong { color: var(--white); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔐 <span>Credentials</span> Manager</h1>
+    <div class="sub">Ivanti Neurons MCP Server — Browser-session credentials</div>
+    <div style="margin-top:0.5rem"><a href="/">← Back to Dashboard</a></div>
+  </div>
+
+  <div class="container">
+
+    <!-- DEX -->
+    <div class="section">
+      <div class="section-title"><span class="dot" id="dotDex"></span> DEX — Neurons Platform</div>
+      <div class="field">
+        <label>Neurons Base URL</label>
+        <div class="input-wrap">
+          <input type="text" id="NEURONS_BASE_URL" placeholder="https://tenant.ivanticloud.com" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Bearer Token</label>
+        <div class="input-wrap">
+          <input type="password" id="NEURONS_BEARER_TOKEN" placeholder="eyJ..." />
+          <button class="toggle" onclick="toggleVis(this)">👁</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="secondary" onclick="testModule('dex')">Test DEX</button>
+      </div>
+      <div class="status" id="statusDex"></div>
+    </div>
+
+    <!-- ITSM -->
+    <div class="section">
+      <div class="section-title"><span class="dot" id="dotItsm"></span> ITSM — Service Management</div>
+      <div class="field">
+        <label>ITSM Base URL</label>
+        <div class="input-wrap">
+          <input type="text" id="ITSM_BASE_URL" placeholder="https://tenant.saasit.com" />
+        </div>
+      </div>
+      <div class="field">
+        <label>REST API Key</label>
+        <div class="input-wrap">
+          <input type="password" id="ITSM_API_KEY" placeholder="abc123..." />
+          <button class="toggle" onclick="toggleVis(this)">👁</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="secondary" onclick="testModule('itsm')">Test ITSM</button>
+      </div>
+      <div class="status" id="statusItsm"></div>
+    </div>
+
+    <!-- MDM -->
+    <div class="section">
+      <div class="section-title"><span class="dot" id="dotMdm"></span> MDM — Mobile Device Management</div>
+      <div class="field">
+        <label>MDM Base URL</label>
+        <div class="input-wrap">
+          <input type="text" id="MDM_BASE_URL" placeholder="https://tenant.mobileiron.com" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Username</label>
+        <div class="input-wrap">
+          <input type="text" id="MDM_USERNAME" placeholder="admin@company.com" />
+        </div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input type="password" id="MDM_PASSWORD" placeholder="••••••••" />
+          <button class="toggle" onclick="toggleVis(this)">👁</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="secondary" onclick="testModule('mdm')">Test MDM</button>
+      </div>
+      <div class="status" id="statusMdm"></div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="btn-row" style="justify-content:center; margin-top:0.5rem;">
+      <button class="primary" onclick="saveAll()">💾 Save All</button>
+      <button class="secondary" onclick="testAll()">🧪 Test All</button>
+      <button class="danger" onclick="clearAll()">🗑 Clear All</button>
+    </div>
+
+    <div class="note">
+      <strong>ℹ How this works:</strong><br />
+      Credentials are stored in your browser's <code>sessionStorage</code> (cleared when you close the tab).
+      They are sent as custom HTTP headers with each MCP request from the dashboard and test panel.
+      For <strong>Claude Desktop / VS Code</strong> connections, set these as
+      <strong>Vercel Environment Variables</strong> instead (Settings → Environment Variables).
+    </div>
+
+  </div>
+
+  <script>
+    const KEYS = [
+      "NEURONS_BASE_URL", "NEURONS_BEARER_TOKEN",
+      "ITSM_BASE_URL", "ITSM_API_KEY",
+      "MDM_BASE_URL", "MDM_USERNAME", "MDM_PASSWORD",
+    ];
+
+    const mcpUrl = `${location.origin}/api/mcp`;
+
+    function loadAll() {
+      for (const k of KEYS) {
+        const v = sessionStorage.getItem(`mcp_${k}`) || "";
+        document.getElementById(k).value = v;
+      }
+    }
+
+    function saveAll() {
+      for (const k of KEYS) {
+        const v = document.getElementById(k).value.trim();
+        if (v) sessionStorage.setItem(`mcp_${k}`, v);
+        else   sessionStorage.removeItem(`mcp_${k}`);
+      }
+      alert("✅ Credentials saved to session.");
+    }
+
+    function clearAll() {
+      if (!confirm("Clear all stored credentials?")) return;
+      for (const k of KEYS) {
+        sessionStorage.removeItem(`mcp_${k}`);
+        document.getElementById(k).value = "";
+      }
+      for (const m of ["Dex","Itsm","Mdm"]) {
+        setDot(m, "");
+        setStatus(m, "", "");
+      }
+    }
+
+    function toggleVis(btn) {
+      const inp = btn.previousElementSibling;
+      inp.type = inp.type === "password" ? "text" : "password";
+    }
+
+    function credHeaders() {
+      const h = {};
+      const map = {
+        NEURONS_BASE_URL:    "x-neurons-base-url",
+        NEURONS_BEARER_TOKEN:"x-neurons-bearer-token",
+        ITSM_BASE_URL:       "x-itsm-base-url",
+        ITSM_API_KEY:        "x-itsm-api-key",
+        MDM_BASE_URL:        "x-mdm-base-url",
+        MDM_USERNAME:        "x-mdm-username",
+        MDM_PASSWORD:        "x-mdm-password",
+      };
+      for (const [key, header] of Object.entries(map)) {
+        const v = document.getElementById(key).value.trim();
+        if (v) h[header] = v;
+      }
+      return h;
+    }
+
+    function setDot(mod, state) {
+      const dot = document.getElementById(`dot${mod}`);
+      dot.className = `dot ${state}`;
+    }
+    function setStatus(mod, cls, msg) {
+      const el = document.getElementById(`status${mod}`);
+      el.className = `status ${cls}`;
+      el.textContent = msg;
+    }
+
+    async function testModule(mod) {
+      const modCap = mod.charAt(0).toUpperCase() + mod.slice(1);
+      setDot(modCap, "");
+      setStatus(modCap, "loading", "Testing…");
+
+      const toolMap = {
+        dex:  "dex_get_environment_summary",
+        itsm: "itsm_get_dashboard_stats",
+        mdm:  "mdm_list_devices",
+      };
+      const argsMap = {
+        dex: {}, itsm: {}, mdm: { rows: 1 },
+      };
+
+      try {
+        const res = await fetch(mcpUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...credHeaders() },
+          body: JSON.stringify({
+            jsonrpc: "2.0", id: 1,
+            method: "tools/call",
+            params: { name: toolMap[mod], arguments: argsMap[mod] },
+          }),
+        });
+        const data = await res.json();
+        const content = data.result?.content?.[0]?.text || "";
+        if (data.result?.isError) {
+          setDot(modCap, "err");
+          setStatus(modCap, "err", `❌ ${content}`);
+        } else {
+          setDot(modCap, "ok");
+          setStatus(modCap, "ok", `✅ Connected — ${content.substring(0, 200)}`);
+        }
+      } catch (e) {
+        setDot(modCap, "err");
+        setStatus(modCap, "err", `❌ Fetch error: ${e.message}`);
+      }
+    }
+
+    async function testAll() {
+      await Promise.all(["dex", "itsm", "mdm"].map(testModule));
+    }
+
+    loadAll();
+  </script>
+</body>
+</html>
